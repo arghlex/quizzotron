@@ -4,6 +4,11 @@ export default function Question (props) {
 
     const qid = props.questionId; 
     const question = decodeURIComponent(props.data.question);
+    // const shuffledAnswers = props.shuffle(props.data.answers.map(a=>a.answer));
+    const temp1 = props.data.answers.map(a=>a.answer);
+    props.shuffle(temp1);
+    console.log(props.data.answers);
+    // console.log(props.data.answers.map(a=>a.answer))
     // const answers = props.data.map(item=>{
     //     console.log(item);
     // });

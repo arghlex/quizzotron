@@ -2,6 +2,7 @@ import './App.css';
 import {useState, useEffect} from 'react';
 import Question from './components/Question'
 import { nanoid } from 'nanoid';
+import { Rings } from "svg-loaders-react";
 
 function App() {
 
@@ -36,17 +37,26 @@ function App() {
         }
     }
 
+    function shuffle(array) {
+        for (let i = array.length - 1; i > 0; i--) {
+            const j = Math.floor(Math.random() * (i + 1));
+            [array[i], array[j]] = [array[j], array[i]];
+        }
+    }
+
     function transformData (data) {
 
         const newData = data.map(question => {
 
             const incorrect = question.incorrect_answers.map((answer)=>{
                 return {
+                    answerId: nanoid(),
                     answer: answer, 
                     isCorrect: false
                 }
             })
             const correct = {
+                answerId: nanoid(),
                 answer: question.correct_answer, 
                 isCorrect: true
             };
@@ -86,11 +96,11 @@ function App() {
             </div>
 
             <div className={quizStatus ? "questions screen screen-2" : "questions screen screen-2 screen__hidden"}>
-
-                { apiSuccess && <Question questionId={"q1"} data={questions[0]} answer={q1Answer} setAnswer={setq1Answer} /> }
-                { apiSuccess && <Question questionId={"q2"} data={questions[1]} answer={q2Answer} setAnswer={setq2Answer} /> }
-                { apiSuccess && <Question questionId={"q3"} data={questions[2]} answer={q3Answer} setAnswer={setq3Answer} /> }
-                { apiSuccess && <Question questionId={"q4"} data={questions[3]} answer={q4Answer} setAnswer={setq4Answer} /> }
+                {quizStatus && !apiSuccess && <Rings stroke="#293264" />}
+                { apiSuccess && <Question questionId={"q1"} data={questions[0]} answer={q1Answer} setAnswer={setq1Answer} shuffle={shuffle} /> }
+                { apiSuccess && <Question questionId={"q2"} data={questions[1]} answer={q2Answer} setAnswer={setq2Answer} shuffle={shuffle} /> }
+                { apiSuccess && <Question questionId={"q3"} data={questions[2]} answer={q3Answer} setAnswer={setq3Answer} shuffle={shuffle} /> }
+                { apiSuccess && <Question questionId={"q4"} data={questions[3]} answer={q4Answer} setAnswer={setq4Answer} shuffle={shuffle} /> }
 
                 { apiSuccess && <button onClick={checkAnswersHandler}>Check answers</button> }
             </div>
