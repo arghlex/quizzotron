@@ -6,8 +6,14 @@ import { nanoid } from 'nanoid';
 function App() {
 
     const apiURL = "https://opentdb.com/api.php?amount=5&difficulty=medium&type=multiple&encode=url3986";
+    const [quizStatus, setQuizStatus] = useState(false);
+    const [apiSuccess, setApiSuccess] = useState(false);
     const [questions, setQuestions] = useState([]);
     const [answers, setAnswers] = useState([]);
+    const [q1Answer, setq1Answer] = useState("");
+    const [q2Answer, setq2Answer] = useState("");
+    const [q3Answer, setq3Answer] = useState("");
+    const [q4Answer, setq4Answer] = useState("");
         
 
     function getQuestions () {
@@ -16,21 +22,19 @@ function App() {
             .then(data => {
                 // console.log(data.results);
                 setQuestions(transformData(data.results));
-                setAnswers(
-                    {
-                        "q1": "",
-                        "q2": "",
-                        "q3": "",
-                        "q4": ""
-                    }
-                );
+                setApiSuccess(true);
             });
     }
 
-    useEffect(()=>{
-        getQuestions()
-    }, [])
+    function handleStartButton(e) {
+        // Set quiz state to started
+        setQuizStatus(true);
 
+        // Do API request
+        if (!apiSuccess) {
+            getQuestions();
+        }
+    }
 
     function transformData (data) {
 
@@ -55,13 +59,12 @@ function App() {
 
         })
 
-        console.log(newData);
+        // console.log(newData);
         return newData;
     }
 
     function checkAnswersHandler () {
-        console.log('check answers')
-
+        console.log('check answers', q1Answer, q2Answer,q3Answer,q4Answer)
         // first check all answers have been selected
 
         // 
@@ -70,22 +73,26 @@ function App() {
 
     console.log("App render");
 
-    const renderQuestions = questions.map( (item, index) => {
-        return <Question key={item.id} questionId={"q" + ( index+1 )} data={item} answers={answers} setAnswers={setAnswers} />
-    });
+    // const renderQuestions = questions.map( (item, index) => {
+    //     return <Question key={item.id} questionId={"q" + ( index+1 )} data={item} answers={answers} setAnswer={setAnswers} />
+    // });
 
     return (
         <div className="App">
-            <div className="intro">
+            <div className={quizStatus ? "intro screen screen-1 screen__hidden" : "intro screen screen-1"}>
                 <h1>Quizzotron</h1>
                 <p>Some description if needed</p>
-                <button>Start Quiz</button>
+                <button onClick={handleStartButton}>Start Quiz</button>
             </div>
 
-            <div className="questions">
-                {renderQuestions}
+            <div className={quizStatus ? "questions screen screen-2" : "questions screen screen-2 screen__hidden"}>
 
-                <button onClick={checkAnswersHandler}>Check answers</button>
+                { apiSuccess && <Question questionId={"q1"} data={questions[0]} answer={q1Answer} setAnswer={setq1Answer} /> }
+                { apiSuccess && <Question questionId={"q2"} data={questions[1]} answer={q2Answer} setAnswer={setq2Answer} /> }
+                { apiSuccess && <Question questionId={"q3"} data={questions[2]} answer={q3Answer} setAnswer={setq3Answer} /> }
+                { apiSuccess && <Question questionId={"q4"} data={questions[3]} answer={q4Answer} setAnswer={setq4Answer} /> }
+
+                { apiSuccess && <button onClick={checkAnswersHandler}>Check answers</button> }
             </div>
         </div>
     );

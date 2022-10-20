@@ -10,6 +10,7 @@ body {
     display: flex;
     flex-direction: column;
     justify-content: center;
+    overflow: hidden;
 }
 
 .intro {
@@ -41,4 +42,27 @@ button:hover, button:active {
     max-width: 500px;
     width: 100%;
     margin: 0 auto;
+}
+
+
+
+
+
+.screen {
+    transform: translate(0, 0);
+    transition: transform .6s linear;
+}
+.screen-1.screen__hidden {
+    transform: translate(-100vw, 0);
+    position: absolute;
+}
+.screen-2 {
+
+}
+.screen-2.screen__hidden {
+    transform: translate(100vw, 0);
+    position: absolute;
+}
+.screen__hidden {
+    transition: transform .6s linear;
 }
