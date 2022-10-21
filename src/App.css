@@ -72,3 +72,28 @@ button:hover, button:active {
     width: 100%;
     height: 100vh;
 }
+
+/* content */
+
+.answers {
+    margin: 0;
+    padding: 0;
+    list-style: none;
+    display: flex;
+}
+
+.answers input[type="radio"] {
+    position: fixed;
+    opacity: 0;
+}
+.answers label {
+    position: relative;
+    z-index: 1;
+    cursor: pointer;
+    background: #ccc;
+    border-radius: 15px;
+    padding: .5rem 1rem;
+    display: inline-block;
+    text-align: center;
+    font-size: .8rem
+}
