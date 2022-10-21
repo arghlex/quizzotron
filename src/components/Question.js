@@ -1,62 +1,35 @@
-import React from "react";
+import React, { useEffect } from "react";
 
 export default function Question (props) {
 
     const qid = props.questionId; 
     const question = decodeURIComponent(props.data.question);
-    // const shuffledAnswers = props.shuffle(props.data.answers.map(a=>a.answer));
-    const temp1 = props.data.answers.map(a=>a.answer);
-    props.shuffle(temp1);
-    console.log(props.data.answers);
-    // console.log(props.data.answers.map(a=>a.answer))
-    // const answers = props.data.map(item=>{
-    //     console.log(item);
-    // });
-
+    
 
     function clickHandler (event) {
-        // console.log(event.target.value);
         props.setAnswer(event.currentTarget.value)
-
-        // console.log(props.answers);
     }
+
+    const listItems = props.data.answers.map((item, idx) =>{
+        return (
+            <li key={`${qid}__a${idx + 1}`}>
+                <input name={qid} type="radio" id={`${qid}__a${idx + 1}`} value={item.answerId} checked={props.answer === item.answerId} onChange={clickHandler} /> 
+                <label htmlFor={`${qid}__a${idx + 1}`} role="button">
+                    {decodeURIComponent(item.answer)}
+                </label>
+            </li>
+        )
+    });
+
+
 
 
     return (
         
         <div className="question">
             <h2>{question}</h2>
-            <ol>
-                <li>
-                    <input name={qid} type="radio" id={`${qid}__a1`} value="1" checked={props.answer === "1"} onChange={clickHandler} /> 
-                    
-                    <label htmlFor={`${qid}__a1`}>
-                        {decodeURIComponent(props.data.answers[0].answer)}
-                    </label>
-                </li>
-                <li>
-                    <input name={qid} type="radio" id={`${qid}__a2`} value="2" checked={props.answer === "2"} onChange={clickHandler} /> 
-                   
-                    <label htmlFor={`${qid}__a2`}>
-                        {decodeURIComponent(props.data.answers[1].answer)}
-                    </label>
-                </li>
-
-                <li>
-                    <input name={qid} type="radio" id={`${qid}__a3`} value="3" checked={props.answer === "3"} onChange={clickHandler} /> 
-                    
-                    <label htmlFor={`${qid}__a3`}>
-                        {decodeURIComponent(props.data.answers[2].answer)}
-                    </label>
-                </li>
-
-                <li>
-                    <input name={qid} type="radio" id={`${qid}__a4`} value="4" checked={props.answer === "4"} onChange={clickHandler} /> 
-                    
-                    <label htmlFor={`${qid}__a4`}>
-                        {decodeURIComponent(props.data.answers[3].answer)}
-                    </label>
-                </li>
+            <ol className="answers">
+                {listItems}
             </ol>
         </div>
     )
