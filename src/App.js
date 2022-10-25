@@ -11,6 +11,7 @@ function App() {
     const [apiSuccess, setApiSuccess] = useState(false);
     const [questions, setQuestions] = useState([]);
     const [correctAnswers, setCorrectAnswers] = useState([]);
+    const [questionsSubmit, setQuestionsSubmit] = useState(false);
     const [q1Answer, setq1Answer] = useState("");
     const [q2Answer, setq2Answer] = useState("");
     const [q3Answer, setq3Answer] = useState("");
@@ -87,7 +88,8 @@ function App() {
             q4Answer===correctAnswers[3],
             q5Answer===correctAnswers[4]
         ]);
-
+        
+        setQuestionsSubmit(true);
         // 
     }
 
@@ -110,14 +112,29 @@ function App() {
                 <button onClick={handleStartButton}>Start Quiz</button>
             </div>
 
-            <div className={quizStatus ? "questions screen screen-2" : "questions screen screen-2 screen__hidden"}>
-                {quizStatus && !apiSuccess && <Rings stroke="#293264" />}
-                { apiSuccess && <Question questionId={"q1"} data={questions[0]} answer={q1Answer} setAnswer={setq1Answer} /> }
-                { apiSuccess && <Question questionId={"q2"} data={questions[1]} answer={q2Answer} setAnswer={setq2Answer} /> }
-                { apiSuccess && <Question questionId={"q3"} data={questions[2]} answer={q3Answer} setAnswer={setq3Answer} /> }
-                { apiSuccess && <Question questionId={"q4"} data={questions[3]} answer={q4Answer} setAnswer={setq4Answer} /> }
-                { apiSuccess && <Question questionId={"q5"} data={questions[4]} answer={q5Answer} setAnswer={setq5Answer} /> }
-                { apiSuccess && <button onClick={checkAnswersHandler}>Check answers</button> }
+            
+            <div className={quizStatus ? "screen screen-2" : "screen screen-2 screen__hidden"}>
+                <section className="section">
+                    <div className="questions">
+                        {quizStatus && !apiSuccess && <Rings stroke="#293264" />}
+                        { apiSuccess && <Question questionId={"q1"} data={questions[0]} answer={q1Answer} setAnswer={setq1Answer} /> }
+                        { apiSuccess && <Question questionId={"q2"} data={questions[1]} answer={q2Answer} setAnswer={setq2Answer} /> }
+                        { apiSuccess && <Question questionId={"q3"} data={questions[2]} answer={q3Answer} setAnswer={setq3Answer} /> }
+                        { apiSuccess && <Question questionId={"q4"} data={questions[3]} answer={q4Answer} setAnswer={setq4Answer} /> }
+                        { apiSuccess && <Question questionId={"q5"} data={questions[4]} answer={q5Answer} setAnswer={setq5Answer} /> }
+                    </div>
+                    <div className="results">
+                        { apiSuccess && <button className="check-answers" onClick={checkAnswersHandler}>Check answers</button> }
+                        { questionsSubmit && (
+                                <>
+                                    <span>You scored 1/5</span>
+                                    <button>Play again</button>
+                                </>
+                            )
+                            
+                        }
+                    </div>
+                </section>
             </div>
         </div>
     );
