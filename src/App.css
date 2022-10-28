@@ -7,7 +7,9 @@
     --a-bg-incorrect: #F8BCBC;
     --a-border: #4D5B9E;
 }
-
+* {
+    box-sizing: border-box;
+}
 body {
     font-family: 'Karla', sans-serif;
     color: #293264;
@@ -19,9 +21,10 @@ body {
     flex-direction: column;
     justify-content: center;
     overflow: hidden;
+    position: relative;
 }
 
-.intro {
+.header {
     text-align: center;
     padding: 1rem;
 }
@@ -46,44 +49,15 @@ button:hover, button:active {
     transition: background-color .3s linear;
 }
 
-/* Screens */
-.screen {
-    transform: translate(0, 0);
-    transition: transform .6s ease-in-out;
-}
-.screen-1.screen__hidden {
-    transform: translate(-100vw, 0);
-    position: absolute;
-}
-.screen-2 {
-
-}
-.screen-2.screen__hidden {
-    transform: translate(100vw, 0);
-    position: absolute;
-}
-.screen__hidden {
-    transition: transform .6s ease-in-out;
-}
-
-
-.screen-2 svg {
-    width: 100%;
-    height: 100vh;
-}
-
-
-
-
-
-
-
 /* content */
 
 .section {
-    max-width: 500px;
+    max-width: 680px;
     width: 100%;
     margin: 0 auto;
+    padding: 0 1rem;
+    position: relative;
+    z-index: 1;
 }
 
 .questions {
@@ -91,7 +65,7 @@ button:hover, button:active {
 }
 
 .question {
-    padding: 1.5rem 0;
+    padding: 2rem 0;
     margin: 0;
     border-bottom: 1px solid #DBDEF0;
 }
@@ -125,7 +99,8 @@ button:hover, button:active {
     margin-right: 12px;
     font-weight: 500;
 }
-.answers label.selected {
+.answers label.selected,
+.answers label:hover:not(.inactive, .correct) {
     background-color: var(--a-bg-selected);
     border-color: var(--a-bg-selected);
 }
@@ -143,4 +118,29 @@ button:hover, button:active {
 
 .results {
     text-align: center;
+    margin-top: 1rem;
+    margin-bottom: 3rem;
+}
+
+.results--outcome {
+    margin: 1rem;
+    font-weight: bold;
+    font-size: 1.25rem;
+}
+
+
+.svg {
+    width: 440px;
+    position: fixed;
+}
+.svg--1 {
+    
+    bottom: -200px;
+    left: -200px;
+    transform: rotate(50deg);
+}
+.svg--2 {
+    top: -200px;
+    right: -200px;
+    transform: rotate(50deg);
 }

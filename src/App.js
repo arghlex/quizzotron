@@ -1,56 +1,41 @@
 import './App.css';
 import {useState, useEffect} from 'react';
-import Question from './components/Question'
+import Questions from './components/Questions';
 import { nanoid } from 'nanoid';
 import { Rings } from "svg-loaders-react";
+import ExampleData from './components/ExampleData';
 
-function App() {
+function App () {
 
-    const apiURL = "https://opentdb.com/api.php?amount=5&difficulty=medium&type=multiple&encode=url3986";
-    const [quizStatus, setQuizStatus] = useState(false);
-    const [apiSuccess, setApiSuccess] = useState(false);
-    const [questions, setQuestions] = useState([]);
-    const [correctAnswers, setCorrectAnswers] = useState([]);
-    const [questionsSubmit, setQuestionsSubmit] = useState(false);
-    const [q1Answer, setq1Answer] = useState("");
-    const [q2Answer, setq2Answer] = useState("");
-    const [q3Answer, setq3Answer] = useState("");
-    const [q4Answer, setq4Answer] = useState("");
-    const [q5Answer, setq5Answer] = useState("");
+    ////////////////////////////////////////////////////////////////////////
+    // Declare variables
+    //
 
-    function getQuestions () {
-        fetch(apiURL)
-            .then(res => res.json())
-            .then(data => {
-                // console.log(data.results);
-                setQuestions(transformData(data.results));
-                setApiSuccess(true);
-            });
-    }
+    const [data, setData] = useState([]);
+    const [correctAnswers, setCorrectAnswers] = useState({q1: "", q2: "", q3: "", q4: "", q5: ""});
+    const [userAnswers, setUserAnswers] = useState({q1: "", q2: "", q3: "", q4: "", q5: ""});
+    const [gameInProgress, setGameInProgress] = useState(false);
+    const [gameOver, setGameOver] = useState(false);
+    const [result, setResult] = useState("");
 
-    function handleStartButton(e) {
-        // Set quiz state to started
-        setQuizStatus(true);
+    ////////////////////////////////////////////////////////////////////////
+    // Initial load data
+    //
 
-        // Do API request
-        if (!apiSuccess) {
-            getQuestions();
-        }
-    }
+    useEffect(()=>{
+        setData(transformData(ExampleData()));
+    }, [])
 
-    function shuffle(array) {
-        const tempArr = array;     
-        for (let i = tempArr.length - 1; i > 0; i--) {
-            const j = Math.floor(Math.random() * (i + 1));
-            [tempArr[i], tempArr[j]] = [tempArr[j], tempArr[i]];
-        }
-        return tempArr;
-    }
 
+    ////////////////////////////////////////////////////////////////////////
+    // Functions
+    //
+
+    // Transforms original API data into a better format
     function transformData (data) {
-
-        const newData = data.map(question => {
-
+        const newData = data.map((question,idx) => {
+            
+            const qId = `q${idx+1}`;
             const incorrect = question.incorrect_answers.map((answer)=>{
                 return {
                     answerId: nanoid(),
@@ -63,81 +48,124 @@ function App() {
                 answer: decodeURIComponent(question.correct_answer), 
                 isCorrect: true
             };
-            setCorrectAnswers(prev=> [...prev, correct.answerId]);
+            
+            setCorrectAnswers(prevObj => {
+                return {
+                    ...prevObj,
+                    [qId]: correct.answerId 
+                }
+            });
+            
             return {
                 id: nanoid(), 
                 question: decodeURIComponent(question.question), 
                 answers: shuffle([...incorrect, correct])
             }
-
         })
-
-        // console.log(newData);
         return newData;
     }
 
-    function checkAnswersHandler () {
-        
-        // first check all answers have been selected
-        // console.log(questions);
-        // console.log(correctAnswers);
-        console.log('answers', [
-            q1Answer===correctAnswers[0], 
-            q2Answer===correctAnswers[1],
-            q3Answer===correctAnswers[2],
-            q4Answer===correctAnswers[3],
-            q5Answer===correctAnswers[4]
-        ]);
-        
-        setQuestionsSubmit(true);
-        // 
+    // Shuffle function to move the correct answer around for presentation
+    function shuffle(array) {
+        const tempArr = array;     
+        for (let i = tempArr.length - 1; i > 0; i--) {
+            const j = Math.floor(Math.random() * (i + 1));
+            [tempArr[i], tempArr[j]] = [tempArr[j], tempArr[i]];
+        }
+        return tempArr;
+    }
+
+    // Get a count of correct answers
+    function countOfCorrect () {
+        let count = 0;
+
+        for (const key in correctAnswers) {
+            // console.log("for in", correctAnswers[key], userAnswers[key], correctAnswers[key] === userAnswers[key])
+            if (correctAnswers[key]===userAnswers[key]) {
+                count++
+            }
+        } 
+        return count;
+    }
+
+    // Reset user answers for new game
+    function prepareNewGame () {
+        setUserAnswers({q1: "", q2: "", q3: "", q4: "", q5: ""});
+        setGameInProgress(false);
+        setGameOver(false);
+        setResult("");
     }
 
 
-    function checkResult(qid,aid) {
-        const answers = questions[qid]
+    ////////////////////////////////////////////////////////////////////////
+    // Event handlers
+    //
+
+    function handleNewGameClick (event) {
+        setGameInProgress(true);
+    }
+    function handleCheckAnswersClick (event) {
+        setResult(countOfCorrect());
+        setGameInProgress(false);
+        setGameOver(true);
+    }
+    function handleAnotherGameClick (event) {
+        prepareNewGame();
     }
 
-    console.log("App render");
 
-    // const renderQuestions = questions.map( (item, index) => {
-    //     return <Question key={item.id} questionId={"q" + ( index+1 )} data={item} answers={answers} setAnswer={setAnswers} />
-    // });
+    ////////////////////////////////////////////////////////////////////////
+    // Logging
+    //
+
+    // console.log("Correct answers", correctAnswers);
+    // console.log("User answers", userAnswers);
+    // console.log("Data", data);
+
+
+    ////////////////////////////////////////////////////////////////////////
+    // Render
+    //
 
     return (
-        <div className="App">
-            <div className={quizStatus ? "intro screen screen-1 screen__hidden" : "intro screen screen-1"}>
-                <h1>Quizzotron</h1>
-                <p>Some description if needed</p>
-                <button onClick={handleStartButton}>Start Quiz</button>
-            </div>
+        <div className="App container" role="main">
+            <svg className="svg svg--1" viewBox="0 0 200 200" xmlns="http://www.w3.org/2000/svg">
+                <path fill="#DEEBF8" d="M45,-70.6C58.6,-70.1,70.1,-58.6,70.7,-45C71.3,-31.4,61.1,-15.7,60.3,-0.4C59.5,14.8,68.3,29.6,65.1,38.8C61.9,48,46.8,51.5,34,56.9C21.2,62.2,10.6,69.4,-0.5,70.2C-11.6,71.1,-23.2,65.6,-37,60.9C-50.8,56.1,-66.8,51.9,-76.6,41.9C-86.5,31.9,-90.1,15.9,-88.8,0.8C-87.5,-14.4,-81.2,-28.8,-70.1,-36.6C-58.9,-44.4,-42.9,-45.5,-30.5,-46.7C-18,-47.9,-9,-49,3.4,-54.9C15.7,-60.7,31.4,-71.1,45,-70.6Z" transform="translate(100 100)" />
+            </svg>
+            <svg className="svg svg--2" viewBox="0 0 200 200" xmlns="http://www.w3.org/2000/svg">
+                <path fill="#fffad1" d="M45,-70.6C58.6,-70.1,70.1,-58.6,70.7,-45C71.3,-31.4,61.1,-15.7,60.3,-0.4C59.5,14.8,68.3,29.6,65.1,38.8C61.9,48,46.8,51.5,34,56.9C21.2,62.2,10.6,69.4,-0.5,70.2C-11.6,71.1,-23.2,65.6,-37,60.9C-50.8,56.1,-66.8,51.9,-76.6,41.9C-86.5,31.9,-90.1,15.9,-88.8,0.8C-87.5,-14.4,-81.2,-28.8,-70.1,-36.6C-58.9,-44.4,-42.9,-45.5,-30.5,-46.7C-18,-47.9,-9,-49,3.4,-54.9C15.7,-60.7,31.4,-71.1,45,-70.6Z" transform="translate(100 100)" />
+            </svg>
 
+            { 
+                !gameInProgress && !gameOver &&
             
-            <div className={quizStatus ? "screen screen-2" : "screen screen-2 screen__hidden"}>
-                <section className="section">
-                    <div className="questions">
-                        {quizStatus && !apiSuccess && <Rings stroke="#293264" />}
-                        { apiSuccess && <Question questionId={"q1"} data={questions[0]} answer={q1Answer} setAnswer={setq1Answer} /> }
-                        { apiSuccess && <Question questionId={"q2"} data={questions[1]} answer={q2Answer} setAnswer={setq2Answer} /> }
-                        { apiSuccess && <Question questionId={"q3"} data={questions[2]} answer={q3Answer} setAnswer={setq3Answer} /> }
-                        { apiSuccess && <Question questionId={"q4"} data={questions[3]} answer={q4Answer} setAnswer={setq4Answer} /> }
-                        { apiSuccess && <Question questionId={"q5"} data={questions[4]} answer={q5Answer} setAnswer={setq5Answer} /> }
+                <div className="section header">
+                    <h1>Quizzotron</h1>
+                    <button onClick={handleNewGameClick}>Play a new game</button>
+                </div>
+            }
+            { 
+                (gameInProgress || gameOver) &&
+                <Questions 
+                    data={data} 
+                    userAnswers={userAnswers} 
+                    setUserAnswers={setUserAnswers}
+                    correctAnswers={correctAnswers}
+                    isGameOver={gameOver}
+                />
+            }    
+
+            <div className="section results">
+                { gameInProgress && !gameOver && <button onClick={handleCheckAnswersClick}>Check answers</button> }
+                { gameOver && 
+                    <div>
+                        <span className='results--outcome'>You scored {result}/5 correct answers</span>
+                        <button onClick={handleAnotherGameClick}>Play again</button>
                     </div>
-                    <div className="results">
-                        { apiSuccess && <button className="check-answers" onClick={checkAnswersHandler}>Check answers</button> }
-                        { questionsSubmit && (
-                                <>
-                                    <span>You scored 1/5</span>
-                                    <button>Play again</button>
-                                </>
-                            )
-                            
-                        }
-                    </div>
-                </section>
+                }
             </div>
         </div>
-    );
+    )
 }
 
 export default App;
