@@ -144,3 +144,14 @@ button:hover, button:active {
     right: -200px;
     transform: rotate(50deg);
 }
+
+.loading {
+    text-align: center;
+}
+
+.loading--text {
+    font-style: italic;
+    color: #5b7188;
+    font-size: 0.8rem;
+    margin-bottom: 1rem;
+}
