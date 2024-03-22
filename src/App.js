@@ -2,7 +2,8 @@ import './App.css';
 import {useState, useEffect} from 'react';
 import Questions from './components/Questions';
 import { nanoid } from 'nanoid';
-import { Rings } from "svg-loaders-react";
+import { Grid } from "svg-loaders-react";
+import ExampleData from './components/ExampleData';
 
 function App () {
 
@@ -16,6 +17,8 @@ function App () {
     const [gameInProgress, setGameInProgress] = useState(false);
     const [gameOver, setGameOver] = useState(false);
     const [result, setResult] = useState("");
+    const [dataLoaded, setDataLoaded] = useState(false);
+    const apiURL = "https://opentdb.com/api.php?amount=5&encode=url3986";
 
     ////////////////////////////////////////////////////////////////////////
     // Initial load data
@@ -28,13 +31,32 @@ function App () {
     }
 
     useEffect(()=>{
-        fetchQuestions();
-    }, []);
+        // setData(transformData(ExampleData()));
+        getNewData();
+        
+    }, [])
 
 
     ////////////////////////////////////////////////////////////////////////
     // Functions
     //
+
+
+    // Get data from API
+    function getNewData () {
+        
+        fetch(apiURL)
+            .then( res => res.json() )
+            .then( data => {
+                const transformed = transformData(data.results);
+                
+                console.log('data loaded', transformed);
+
+                setData(transformed);
+                setDataLoaded(true);
+
+            })
+    }
 
     // Transforms original API data into a better format
     function transformData (data) {
@@ -96,10 +118,11 @@ function App () {
     // Reset user answers for new game
     function prepareNewGame () {
         setUserAnswers({q1: "", q2: "", q3: "", q4: "", q5: ""});
-        setGameInProgress(false);
+        setGameInProgress(true);
         setGameOver(false);
+        setDataLoaded(false);
         setResult("");
-        fetchQuestions();
+        getNewData();
     }
 
 
@@ -151,7 +174,15 @@ function App () {
                 </div>
             }
             { 
-                (gameInProgress || gameOver) &&
+                // add loading animation as the questions aren't ready yet
+                (gameInProgress && !dataLoaded) && 
+                <div className="section loading">
+                    <p className='loading--text'>loading questions</p>
+                    <Grid className='loading--svg' fill="rgb(222, 235, 248)" />
+                </div>
+            }
+            {
+                dataLoaded && (gameInProgress || gameOver) &&
                 <Questions 
                     data={data} 
                     userAnswers={userAnswers} 
@@ -162,7 +193,7 @@ function App () {
             }    
 
             <div className="section results">
-                { gameInProgress && !gameOver && <button onClick={handleCheckAnswersClick}>Check answers</button> }
+                { dataLoaded && gameInProgress && !gameOver && <button onClick={handleCheckAnswersClick}>Check answers</button> }
                 { gameOver && 
                     <div>
                         <span className='results--outcome'>You scored {result}/5 correct answers</span>
