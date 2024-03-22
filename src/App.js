@@ -3,7 +3,6 @@ import {useState, useEffect} from 'react';
 import Questions from './components/Questions';
 import { nanoid } from 'nanoid';
 import { Rings } from "svg-loaders-react";
-import ExampleData from './components/ExampleData';
 
 function App () {
 
@@ -22,9 +21,15 @@ function App () {
     // Initial load data
     //
 
+    const fetchQuestions = () => {
+        fetch('https://opentdb.com/api.php?amount=5&difficulty=medium&type=multiple&encode=url3986')
+            .then((reponse)=> reponse.json())
+            .then((data) => setData(transformData(data.results)));
+    }
+
     useEffect(()=>{
-        setData(transformData(ExampleData()));
-    }, [])
+        fetchQuestions();
+    }, []);
 
 
     ////////////////////////////////////////////////////////////////////////
@@ -94,6 +99,7 @@ function App () {
         setGameInProgress(false);
         setGameOver(false);
         setResult("");
+        fetchQuestions();
     }
 
 
