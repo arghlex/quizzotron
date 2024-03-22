@@ -8,7 +8,10 @@ This project was bootstrapped with [Create React App](https://github.com/faceboo
 
 The quiz currently renders example data as 5 multiple choice questions. Answers can be selected and then checked. Checking answers will close the quiz so it cannot be interacted with again. Playing again will reset the state and allow the quiz to be run again.
 
-Further improvements will be made to pull from the Open Trivia DB API to get new questions on each run.
+## Further improvements
+- pull from the Open Trivia DB API to get new questions on each run
+- add options to choose the type of questions
+- improve layout: headings; fonts; adjust for mobile etc.
 
 ## Install
 
