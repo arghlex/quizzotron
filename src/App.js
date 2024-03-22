@@ -3,7 +3,6 @@ import {useState, useEffect} from 'react';
 import Questions from './components/Questions';
 import { nanoid } from 'nanoid';
 import { Grid } from "svg-loaders-react";
-import ExampleData from './components/ExampleData';
 
 function App () {
 
@@ -31,9 +30,7 @@ function App () {
     }
 
     useEffect(()=>{
-        // setData(transformData(ExampleData()));
         getNewData();
-        
     }, [])
 
 
@@ -49,12 +46,8 @@ function App () {
             .then( res => res.json() )
             .then( data => {
                 const transformed = transformData(data.results);
-                
-                console.log('data loaded', transformed);
-
                 setData(transformed);
                 setDataLoaded(true);
-
             })
     }
 
@@ -141,15 +134,6 @@ function App () {
     function handleAnotherGameClick (event) {
         prepareNewGame();
     }
-
-
-    ////////////////////////////////////////////////////////////////////////
-    // Logging
-    //
-
-    // console.log("Correct answers", correctAnswers);
-    // console.log("User answers", userAnswers);
-    // console.log("Data", data);
 
 
     ////////////////////////////////////////////////////////////////////////
