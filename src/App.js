@@ -2,7 +2,7 @@ import './App.css';
 import {useState, useEffect} from 'react';
 import Questions from './components/Questions';
 import { nanoid } from 'nanoid';
-import { Grid } from "svg-loaders-react";
+import { Grid } from 'svg-loaders-react';
 
 function App () {
 
@@ -17,21 +17,21 @@ function App () {
     const [gameOver, setGameOver] = useState(false);
     const [result, setResult] = useState("");
     const [dataLoaded, setDataLoaded] = useState(false);
-    const apiURL = "https://opentdb.com/api.php?amount=5&encode=url3986";
+    
 
     ////////////////////////////////////////////////////////////////////////
     // Initial load data
     //
 
-    const fetchQuestions = () => {
-        fetch('https://opentdb.com/api.php?amount=5&difficulty=medium&type=multiple&encode=url3986')
-            .then((reponse)=> reponse.json())
-            .then((data) => setData(transformData(data.results)));
-    }
+    // const fetchQuestions = () => {
+    //     fetch('https://opentdb.com/api.php?amount=5&difficulty=medium&type=multiple&encode=url3986')
+    //         .then((reponse)=> reponse.json())
+    //         .then((data) => setData(transformData(data.results)));
+    // }
 
     useEffect(()=>{
         getNewData();
-    }, [])
+    })
 
 
     ////////////////////////////////////////////////////////////////////////
@@ -40,15 +40,21 @@ function App () {
 
 
     // Get data from API
-    function getNewData () {
-        
-        fetch(apiURL)
-            .then( res => res.json() )
-            .then( data => {
-                const transformed = transformData(data.results);
-                setData(transformed);
-                setDataLoaded(true);
-            })
+    async function getNewData () {
+        const apiURL = "https://opentdb.com/api.php?amount=5&encode=url3986";
+
+        try {
+            const response = await fetch(apiURL);
+            if (!response.ok) {
+                throw new Error(`Response status: ${response.status}`);
+            }
+            const data = await response.json();
+            setData( transformData(data.results) );
+            setDataLoaded(true);
+
+        } catch (error) {
+            console.error(error.message)
+        }
     }
 
     // Transforms original API data into a better format
